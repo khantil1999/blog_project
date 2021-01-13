@@ -1,44 +1,68 @@
-const checkValidation = require('./validation');
+const { checkValidation,generateObj} = require('./validation');
 const { User } = require('../models');
-
-const generateObj = (obj) => {
-    const finalObj = {}
-    for (let key in obj) {
-        finalObj[key] = obj[key]['value'];
-    }
-    
-    return finalObj;
-
-}
+const bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 
 
 const createUser = async (req, res, next) => {
     try {
         const userObj = {
-            name: { isAlpha: true, isEmpty: true, value: req.body.name },
-            email: { isEmail: true, isEmpty: true, value: req.body.email },
-            password: {value:req.body.password}
+            name: { isAlpha: true, isEmpty: true, value: req.body.name || '' },
+            email: { isEmail: true, isEmpty: true, value: req.body.email || '' },
+            password: { value: req.body.password || '' }
         }
         const data = checkValidation(userObj);
-        if(Object.keys(data).length !== 0)
-        {
-            return  res.status(400).json(data);
+        // console.log(data);
+        if (Object.keys(data).length !== 0) {
+            return res.status(400).json(data);
         }
-        const user=await new User(generateObj(userObj)).save()
+        const user = await new User(generateObj(userObj)).save();
 
-    } catch (error) {
-        
+        res.status(201).json({
+            message: "Register Successfully"
+        })
+
+    } catch (err) {
+        next(err);
     }
-    
-    
-    
-    
-
 
 }
+const login = async (req, res, next) => {
+    try {
+        const obj = {
+            email: { isEmpty: true, value: req.body.email || '' },
+            password: { isEmpty: true, value: req.body.password || ''}
+        }
+        const data = checkValidation(obj)
+        if (Object.keys(data).length != 0) {
+            return res.status(400).json(data)
+        }
 
+        const user = await User.findOne({ email: req.body.email });
+        if (!user || !bcryptjs.compareSync(req.body.password, user.password)) {
+            return res.status(404).json({
+                error: 'These Credentials Do Not Match Our Records.'
+            })
+        }
+        const token=jwt.sign({id:user._id},'KHANTIL');
+        user.tokens=user.tokens.concat({token})
+        await user.save();
+
+        res.status(200).json({
+            message:'Login Successfully',
+            id:user._id,
+            token
+        })
+        
+
+
+    } catch (error) {
+        next(error);
+    }
+}
 
 module.exports = {
-    createUser
+    createUser,
+    login
 }

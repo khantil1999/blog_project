@@ -1,0 +1,8 @@
+const router=require('express').Router();
+const {createTopic,findAll,getPost}=require('../controllers/topic.controller');
+
+router.post('/',createTopic);
+router.get('/',findAll);
+router.get('/:id',getPost);
+
+module.exports=router

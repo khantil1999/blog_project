@@ -3,25 +3,31 @@ const mongoose=require('mongoose');
 const postSchema=new mongoose.Schema({
     postTitle:{
         type:String,
-        trim:true
+        trim:true,
+        required:[true,'Post Title Is Required']
     },
     postDescription:{
         type:String,
-        trim:true
+        trim:true,
+        required:[true,'Post Description Is Required'],
+        minlength:[10,'At Least Contain Ten Or More Character']
     },
     postImage:{
         type:String,
     },
     postDate:{
         type:Date,
+        required:[true,'Post Date Is Required']
     },
     topicId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'topic'
+        ref:'topic',
+        required:[true,'Topic Can Not Be Blank']
     },
     userId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'user'
+        ref:'user',
+        required:true
     }
     
 })
