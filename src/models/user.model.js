@@ -6,14 +6,6 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:[true,'Name Can Not Be Blank'],
         trim:true,
-        validate:(value)=>{
-            if (!validator.isAlpha(value)) {
-                throw new Error('only alphabets are allowed');
-                
-            }
-        }
-
-        
     },
     email: {
         type: String,
@@ -26,12 +18,12 @@ const userSchema = new mongoose.Schema({
                 
             }
         }
-        
 
     },
     password: {
         type: String,
         required: [true,'Password Can NOt Be Blank'],
+        minlength:[6,'Password Must Be Grater Then 6 Charactr']
         
     },
     tokens: [{

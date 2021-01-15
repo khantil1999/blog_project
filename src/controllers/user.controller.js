@@ -1,7 +1,7 @@
-const { checkValidation,generateObj} = require('./validation');
 const { User } = require('../models');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+
 
 
 
@@ -26,14 +26,20 @@ const createUser = async (req, res, next) => {
 }
 const login = async (req, res, next) => {
     try {
-        const obj = {
-            email: { isEmpty: true, value: req.body.email || '' },
-            password: { isEmpty: true, value: req.body.password || ''}
+
+        if(!req.body.email || !req.body.password)
+        {
+            return res.status(400).json({
+                error: 'Email Address Or Password Are Can No Be Blank'
+            })
         }
-        const data = checkValidation(obj)
-        if (Object.keys(data).length != 0) {
-            return res.status(400).json(data)
-        }
+        // if(validator.isEmpty(req.body.password))
+        // {
+        //     return res.status(401).json({
+        //         error: 'Password Is Can No Be Blank'
+        //     })
+        // }
+        
 
         const user = await User.findOne({ email: req.body.email });
         if (!user || !bcryptjs.compareSync(req.body.password, user.password)) {
