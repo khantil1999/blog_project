@@ -21,6 +21,7 @@ const verifyToken=async(req,res,next)=>{
         });
     }
     req.user=user;
+    req.token=token
     
     next();
     

@@ -33,14 +33,6 @@ const login = async (req, res, next) => {
                 error: 'Email Address Or Password Are Can No Be Blank'
             })
         }
-        // if(validator.isEmpty(req.body.password))
-        // {
-        //     return res.status(401).json({
-        //         error: 'Password Is Can No Be Blank'
-        //     })
-        // }
-        
-
         const user = await User.findOne({ email: req.body.email });
         if (!user || !bcryptjs.compareSync(req.body.password, user.password)) {
             return res.status(404).json({
@@ -64,7 +56,23 @@ const login = async (req, res, next) => {
     }
 }
 
+
+const logOut=async(req,res,next)=>{
+    try {
+        req.user.tokens=req.user.tokens.filter((token)=>{
+            return token.token!==req.token
+        })
+        await req.user.save();
+        res.status(200).json({
+            message:"Logout Successfully"
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     createUser,
-    login
+    login,
+    logOut
 }
