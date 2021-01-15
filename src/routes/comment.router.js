@@ -4,6 +4,6 @@ const verifyToken=require('../middlewares/auth');
 
 
 
-router.post('/',verifyToken,createComment);
+router.post('/:id',verifyToken,createComment);
 
 module.exports=router

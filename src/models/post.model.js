@@ -1,6 +1,7 @@
 const mongoose=require('mongoose');
 const Comments=require('./comments.model')
 const Like=require('./likes.model')
+const Topic=require('./topic.model');
 
 const postSchema=new mongoose.Schema({
     postTitle:{
@@ -24,7 +25,14 @@ const postSchema=new mongoose.Schema({
     topicId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'topic',
-        required:[true,'Topic Can Not Be Blank']
+        required:[true,'Topic Can Not Be Blank'],
+        validate:async(value)=>{
+            const data=await Topic.findById(value);
+            if(!data)
+            {
+                throw new Error("No Topic Found");
+            }
+        }
     },
     userId:{
         type:mongoose.Schema.Types.ObjectId,

@@ -3,6 +3,6 @@ const {createTopic,findAll,getPost}=require('../controllers/topic.controller');
 
 router.post('/',createTopic);
 router.get('/',findAll);
-router.get('/:id',getPost);
+router.get('/posts/:id',getPost);
 
 module.exports=router

@@ -1,53 +1,146 @@
 const { checkValidation, generateObj } = require('./validation');
-const { Like } = require('../models');
+const { Like,Post} = require('../models');
 const validator = require('validator');
 
-const likePost=async(req,res,next)=>{
+const likePost = async (req, res, next) => {
     try {
-        
-        if(!validator.isMongoId(req.body.postId))
+
+        if (!validator.isMongoId(req.params.id)) {
+            return res.status(400).json({
+                error: 'Provide Valid Post Id'
+            })
+        }
+        const post=await Post.findById(req.params.id);
+        if(!post)
         {
             return res.status(400).json({
-                error:'Provide Valid Id'
+                error: 'Provide Valid Post Id'
             })
         }
-        const data=await Like.findOne({postId:req.body.postId,userId:req.user._id})
-        if(!data)
+        const data = await Like.findOne({ postId: req.params.id, userId: req.user._id })
+        if (!data) {
+            const likeObj = {
+                isLike: true,
+                postId: req.params.id,
+                userId: req.user._id
+            }
+
+            const like = await new Like(likeObj).save();
+            return res.status(200).json({
+                message: 'Successfully Done'
+            })
+        }
+        else if (data.isLike === false) {
+            data.isLike = true
+            await data.save();
+            return res.status(200).json({
+                message: 'Successfully Done'
+            })
+
+        }
+        else if(data.isLike===true)
         {
-            const likeObj={
-                isLike:req.body.like.toLowerCase(),
-                postId:req.body.postId,
-                userId:req.user._id
-            }
-            
-            const like=await new Like(likeObj).save();
-            res.status(201).json({
-                message:'Successfully Done'
+            await data.remove();
+            res.status(200).json({
+                message: 'Successfully Done'
             })
-        }
-        else{
-            if(data.isLike==='true' && req.body.like.toLowerCase()==='false')
-            {
-                data.isLike='false'
-                await data.save()
-            }
-            else if(data.isLike==='false' && req.body.like.toLowerCase()==='true')
-            {
-                data.isLike='true'
-                await data.save()
-            }
-            else if((data.isLike==='false' && req.body.like.toLowerCase()==='true') || (data.isLike==='false' && req.body.like.toLowerCase()==='false'))
-            {
-                
-            }
         }
         
+
     } catch (error) {
         next(error)
     }
 }
 
 
-module.exports={
-    likePost
+const disLikePost = async (req, res, next) => {
+    try {
+        if (!validator.isMongoId(req.params.id)) {
+            return res.status(400).json({
+                error: 'Provide Valid Post Id'
+            })
+        }
+        const post=await Post.findById(req.params.id);
+        if(!post)
+        {
+            return res.status(400).json({
+                error: 'Provide Valid Post Id'
+            })
+        }
+        const data = await Like.findOne({ postId: req.params.id, userId: req.user._id })
+        if (!data) {
+            const likeObj = {
+                isLike: false,
+                postId: req.params.id,
+                userId: req.user._id
+            }
+
+            const like = await new Like(likeObj).save();
+            return res.status(200).json({
+                message: 'Successfully Done'
+            })
+        }
+        else if (data.isLike === true) {
+            data.isLike = false
+            await data.save();
+            return res.status(200).json({
+                message: 'Successfully Done'
+            })
+
+        }
+        else if(data.isLike===false)
+        {
+            await data.remove();
+            res.status(200).json({
+                message: 'Successfully Done'
+            })
+        }
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+
+const getMostLikePost = async (req, res, next) => {
+    try {
+      
+        const mostLikePosts = await Like.aggregate([
+            {
+                $match:{"isLike":{$eq:true}}
+            },
+            {
+                $group: {
+                    _id: "$postId",
+                    count: { $sum: 1},
+
+                }
+            },
+            { 
+                $lookup:{
+                    from:'posts',
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "post"
+                }
+            
+            },
+            {
+                $sort:{count:-1}
+            },
+            {
+                $project:{count:1,"post":{"postTitle":1,"postDescription":1,"postDate":1}}
+            }
+        ])
+        
+        
+        res.status(200).json(mostLikePosts);        
+    } catch (error) {
+        next(error)
+    }
+}
+module.exports = {
+    likePost,
+    disLikePost,
+    getMostLikePost
 }

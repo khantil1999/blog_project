@@ -1,9 +1,9 @@
 const router=require('express').Router();
-const {likePost}=require('../controllers/likes.controller');
+const {likePost,disLikePost,getMostLikePost}=require('../controllers/likes.controller');
 const verifyToken=require('../middlewares/auth');
 
-router.post('/likePost',verifyToken,likePost);
+router.post('/likePost/:id',verifyToken,likePost);
+router.post('/disLikePost/:id',verifyToken,disLikePost);
 
-
-
+router.get('/mostLikePost',getMostLikePost)
 module.exports=router

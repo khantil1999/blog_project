@@ -7,6 +7,7 @@ const { find } = require('../models/user.model');
 
 const createPost = async (req, res, next) => {
     try {
+        
         const postObj = {
             postTitle: req.body.postTitle,
             postDescription: req.body.postDescription,
@@ -120,23 +121,25 @@ const getAllPost=async(req,res,next)=>{
         next(error)
     }
 }
-const getPostByTopic = async (req, res, next) => {
-    console.log(req.params.id)
-    try {
 
-        const posts = await Post.find({ topicId: req.params.id });
-        for (let i = 0; i < posts.length; i++) {
-            await posts[i].populate({
-                path: 'topicId'
-            }).execPopulate();
-        }
-        console.log(posts);
+
+const getMostRecentPost=async(req,res,next)=>{
+    try {
+        const posts=await Post.find().sort({postDate:-1});
         if (!posts) {
             return res.status(404).json({
-                message: 'oops no post found releted to this topic!'
+                message: 'oops no posts found'
             })
         }
-        res.status(200).json(posts)
+        for(let i=0;i<posts.length;i++)
+        {
+            await posts[i].populate({
+                path:'topicId',
+                select:'-_id -__v'
+            }).execPopulate();
+        }
+        
+        res.status(200).json(posts);
     } catch (error) {
         next(error)
     }
@@ -146,6 +149,6 @@ module.exports = {
     updatePost,
     deletePost,
     getPostByUser,
-    getPostByTopic,
-    getAllPost
+    getAllPost,
+    getMostRecentPost
 }

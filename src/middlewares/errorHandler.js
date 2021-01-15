@@ -1,6 +1,6 @@
 const errorHandler = ((err, req, res, next) => {
 
-    console.log(err);
+    // console.log(err);
     if (err.code && err.code === 11000) {
         res.status(400).json({
             error: `${Object.keys(err.keyValue)} has already been taken`

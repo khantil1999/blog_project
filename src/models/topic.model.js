@@ -3,18 +3,14 @@ const mongoose = require('mongoose');
 const topicSchema=new mongoose.Schema({
     topicTitle:{
         type:String,
-        required:true,
+        required:[true,"Topic Can Not Be Blank"],
         minlength:[2,'Title must me greate then 3 character'],
         unique:true
     }
 
 })
 
-topicSchema.virtual('posts',{
-    ref: 'post',
-    localField: '_id',
-    foreignField: 'topicId'
-})
+
 
 
 

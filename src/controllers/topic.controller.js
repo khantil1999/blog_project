@@ -1,21 +1,16 @@
 const { checkValidation,generateObj} = require('./validation');
-const { Topic } = require('../models');
-
+const { Topic ,Post} = require('../models');
+const validator = require('validator');
 const createTopic=async(req,res,next)=>{
     try {
         const topicObj={
-            topicTitle:{isEmpty:true,value:req.body.title || ''}
+            topicTitle:req.body.title 
         }
-    
-        const data=checkValidation(topicObj);
-        if(Object.keys(data).length!==0)
-        {
-            return res.status(400).json({'error':data})
-        }
-        const topic=await new Topic(generateObj(topicObj)).save();
+        const topic=await new Topic(topicObj).save();
         res.status(201).json({
             message:'Topic Created',
-            id:topic._id
+            id:topic._id,
+            title:topic.topicTitle
         })
     } catch (error) {
         next(error)
@@ -36,18 +31,23 @@ const findAll=async(req,res,next)=>{
 
 const getPost=async(req,res,next)=>{
     try {
-        const topic = await Topic.findById(req.params.id);
-        // console.log(topic);
-        await topic.populate({
-            path:'posts'
-        }).execPopulate();
-        if(!topic)
+        
+        if (!validator.isMongoId(req.params.id)) {
+            return res.status(404).json({
+                message:'oops no post found releted to this topic!'
+            })
+        }
+        const posts = await Post.find({topicId:req.params.id})
+        
+       
+        if(!posts)
         {
             return res.status(404).json({
                 message:'oops no post found releted to this topic!'
             })
         }
-        res.status(200).json(topic)
+        
+        res.status(200).json(posts)
     } catch (error) {
         next(error)
     }
