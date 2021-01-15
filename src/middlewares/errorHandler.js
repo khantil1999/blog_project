@@ -17,6 +17,12 @@ const errorHandler = ((err, req, res, next) => {
         res.status(400).json(errorObject)
 
     }
+    else if(err.name==='JsonWebTokenError')
+    {
+        res.status(401).json({
+            error: 'Unauthorized Access'
+        })
+    }
     else {
         res.send('ERROR')
     }

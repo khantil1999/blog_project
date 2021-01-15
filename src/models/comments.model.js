@@ -4,14 +4,17 @@ const commentsSchema=new mongoose.Schema({
     description:{
         type:String,
         trim:true,
-        minlength:[10,"Description must be ten or more character"]
+        required:[true,'Description Can Not Be Blank']
+
     },
     dateTime:{
         type:Date,
     },
     postId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'post'
+        ref:'post',
+        required:[true,'Post Is Required']
+
     },
     userId:{
         type:mongoose.Schema.Types.ObjectId,

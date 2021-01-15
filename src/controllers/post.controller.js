@@ -4,6 +4,7 @@ const validator = require('validator');
 const { find } = require('../models/user.model');
 
 
+
 const createPost = async (req, res, next) => {
     try {
         const postObj = {
@@ -34,7 +35,7 @@ const updatePost = async (req, res, next) => {
         const post = await Post.findOne({ _id: req.params.id, userId: req.user._id })
         if (!post) {
             return res.status(404).json({
-                message: 'oops post is not found'
+                message: 'oops no posts found'
             })
         }
         updateAllowed.forEach(el => {
@@ -57,13 +58,13 @@ const deletePost = async (req, res, next) => {
     try {
         if (!validator.isMongoId(req.params.id)) {
             return res.status(404).json({
-                message: 'oops post is not found'
+                message: 'oops no posts found'
             })
         }
         const post = await Post.findOne({ _id: req.params.id, userId: req.user._id })
         if (!post) {
             return res.status(404).json({
-                message: 'oops post is not found'
+                message: 'oops no posts found'
             })
         }
         await post.remove();
@@ -78,19 +79,47 @@ const deletePost = async (req, res, next) => {
 const getPostByUser = async (req, res, next) => {
     try {
         const posts = await Post.find({ userId: req.user._id })
-        if (!posts) {
+        
+        if (posts.length<=0) {
             return res.status(404).json({
-                message: 'oops post is not found'
+                message: 'oops no posts found'
             })
         }
-
+        for(let i=0;i<posts.length;i++)
+        {
+            await posts[i].populate({
+                path:'topicId',
+                select:'-_id  -__v'
+            }).execPopulate();
+        }
         res.status(200).json(posts);
 
     } catch (error) {
         next(error)
     }
 }
-
+const getAllPost=async(req,res,next)=>{
+    try {
+        const posts=await Post.find()
+        if (!posts) {
+            return res.status(404).json({
+                message: 'oops no posts found'
+            })
+        }
+        for(let i=0;i<posts.length;i++)
+        {
+            
+            await posts[i].populate({
+                path:'topicId',
+                select:'-_id -__v'
+            }).execPopulate();
+        }
+        
+        res.status(200).json(posts);
+    } catch (error) {
+        next(error)
+    }
+}
 const getPostByTopic = async (req, res, next) => {
     console.log(req.params.id)
     try {
@@ -117,5 +146,6 @@ module.exports = {
     updatePost,
     deletePost,
     getPostByUser,
-    getPostByTopic
+    getPostByTopic,
+    getAllPost
 }

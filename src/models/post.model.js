@@ -1,4 +1,6 @@
 const mongoose=require('mongoose');
+const Comments=require('./comments.model')
+const Like=require('./likes.model')
 
 const postSchema=new mongoose.Schema({
     postTitle:{
@@ -32,6 +34,13 @@ const postSchema=new mongoose.Schema({
     
 })
 
+
+postSchema.pre('remove',async function(next){
+  
+    await Comments.deleteMany({postId:this._id});
+    await Like.deleteMany({postId:this._id});
+    next()
+})
 
 const Post=mongoose.model('post',postSchema);
 

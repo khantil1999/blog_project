@@ -8,16 +8,12 @@ const jwt = require('jsonwebtoken');
 const createUser = async (req, res, next) => {
     try {
         const userObj = {
-            name: { isAlpha: true, isEmpty: true, value: req.body.name || '' },
-            email: { isEmail: true, isEmpty: true, value: req.body.email || '' },
-            password: { value: req.body.password || '' }
+            name: req.body.name,
+            email:req.body.email ,
+            password:req.body.password
         }
-        const data = checkValidation(userObj);
-        // console.log(data);
-        if (Object.keys(data).length !== 0) {
-            return res.status(400).json(data);
-        }
-        const user = await new User(generateObj(userObj)).save();
+        
+        const user = await new User(userObj).save();
 
         res.status(201).json({
             message: "Register Successfully"
