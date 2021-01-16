@@ -22,7 +22,7 @@ const commentsSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'user'
     }
-})
+},{timestamps:true})
 
 
 const Comments=mongoose.model('comments',commentsSchema);

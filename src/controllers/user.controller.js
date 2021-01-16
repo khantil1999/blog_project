@@ -16,7 +16,8 @@ const createUser = async (req, res, next) => {
         const user = await new User(userObj).save();
 
         res.status(201).json({
-            message: "Register Successfully"
+            message: "Register Successfully",
+            user
         })
 
     } catch (err) {

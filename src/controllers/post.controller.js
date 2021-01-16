@@ -8,6 +8,11 @@ const { find } = require('../models/user.model');
 const createPost = async (req, res, next) => {
     try {
         
+        if (!validator.isMongoId(req.body.topicId)) {
+            return res.status(404).json({
+                message: 'Please Provide Valid Topic Id'
+            })
+        }
         const postObj = {
             postTitle: req.body.postTitle,
             postDescription: req.body.postDescription,
@@ -16,7 +21,13 @@ const createPost = async (req, res, next) => {
             userId: req.user._id
         }
         const post = await Post(postObj).save();
-        res.status(201).json(post)
+        res.status(201).json({
+            message:"Post Created Successfully",
+            postId:post._id,
+            postTitle:post.postTitle,
+            postDescription:post.postDescription,
+            postDate:post.postDate
+        })
     } catch (error) {
         next(error);
     }
@@ -46,7 +57,7 @@ const updatePost = async (req, res, next) => {
         const newPost = await post.save();
         await newPost.populate({
             path: 'topicId',
-            select: '-_id -__v'
+            select: '-_id -__v -createdAt -updatedAt'
         }).execPopulate()
         res.status(200).json(newPost);
 
@@ -79,7 +90,7 @@ const deletePost = async (req, res, next) => {
 
 const getPostByUser = async (req, res, next) => {
     try {
-        const posts = await Post.find({ userId: req.user._id })
+        const posts = await Post.find({ userId: req.user._id },{createdAt:0,updatedAt:0,__v:0,userId:0})
         
         if (posts.length<=0) {
             return res.status(404).json({
@@ -90,7 +101,7 @@ const getPostByUser = async (req, res, next) => {
         {
             await posts[i].populate({
                 path:'topicId',
-                select:'-_id  -__v'
+                select: '-_id -__v -createdAt -updatedAt -userId'
             }).execPopulate();
         }
         res.status(200).json(posts);
@@ -101,7 +112,7 @@ const getPostByUser = async (req, res, next) => {
 }
 const getAllPost=async(req,res,next)=>{
     try {
-        const posts=await Post.find()
+        const posts=await Post.find({},{createdAt:0,updatedAt:0,__v:0})
         if (!posts) {
             return res.status(404).json({
                 message: 'oops no posts found'
@@ -112,7 +123,7 @@ const getAllPost=async(req,res,next)=>{
             
             await posts[i].populate({
                 path:'topicId',
-                select:'-_id -__v'
+                select: '-_id -__v -createdAt -updatedAt -userId'
             }).execPopulate();
         }
         
@@ -125,7 +136,7 @@ const getAllPost=async(req,res,next)=>{
 
 const getMostRecentPost=async(req,res,next)=>{
     try {
-        const posts=await Post.find().sort({postDate:-1});
+        const posts=await Post.find({},{createdAt:0,updatedAt:0,__v:0,userId:0}).sort({postDate:-1});
         if (!posts) {
             return res.status(404).json({
                 message: 'oops no posts found'
@@ -135,7 +146,7 @@ const getMostRecentPost=async(req,res,next)=>{
         {
             await posts[i].populate({
                 path:'topicId',
-                select:'-_id -__v'
+                select: '-_id -__v -createdAt -updatedAt -userId'
             }).execPopulate();
         }
         

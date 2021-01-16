@@ -112,7 +112,7 @@ const getMostLikePost = async (req, res, next) => {
             {
                 $group: {
                     _id: "$postId",
-                    count: { $sum: 1},
+                    likes: { $sum: 1},
 
                 }
             },
@@ -126,10 +126,10 @@ const getMostLikePost = async (req, res, next) => {
             
             },
             {
-                $sort:{count:-1}
+                $sort:{likes:-1}
             },
             {
-                $project:{count:1,"post":{"postTitle":1,"postDescription":1,"postDate":1}}
+                $project:{likes:1,"post":{"postTitle":1,"postDescription":1,"postDate":1}}
             }
         ])
         

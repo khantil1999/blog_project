@@ -61,7 +61,44 @@ const deleteComment=async(req,res,next)=>{
     }
 }
 
+
+const getCommentByPost=async(req,res,next)=>{
+    try {
+        if(!validator.isMongoId(req.params.id))
+        {
+            return res.status(400).json({
+                error:'Provide Valid Post Id'
+            })
+        }
+        const post=await Post.findById(req.params.id);
+        if(!post)
+        {
+            return res.status(400).json({
+                error: 'Provide Valid Post Id'
+            })
+        }
+        const comments=await Comments.find({postId:req.params.id},{createdAt:0,updatedAt:0,__v:0});
+        if(comments.length<=0)
+        {
+            return res.status(200).json({
+                message: 'Oops No Comments Found On This Post!'
+            })
+        }
+        for(let i=0;i<comments.length;i++)
+        {
+            await comments[i].populate({
+                path:'postId',
+                select:'-_id -__v -userId -topicId -createdAt -updatedAt'
+            }).execPopulate();
+        }
+        res.status(200).json(comments);
+
+    } catch (error) {
+        next(error);
+    }
+}
 module.exports={
     createComment,
-    deleteComment
+    deleteComment,
+    getCommentByPost
 }

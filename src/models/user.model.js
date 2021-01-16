@@ -6,10 +6,16 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:[true,'Name Can Not Be Blank'],
         trim:true,
+        validate:(value)=>{
+            if(!value.match(/^[A-Za-z ]+$/))
+            {
+                throw new Error('Name Contains Only Characters And White Space')
+            }
+        }
     },
     email: {
         type: String,
-        required: [true,'Email Can NOt Be Blank'],
+        required: [true,'Email Can Not Be Blank'],
         trim: true,
         unique: true,
         validate:(value)=>{
@@ -22,8 +28,14 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: [true,'Password Can NOt Be Blank'],
-        minlength:[6,'Password Must Be Grater Then 6 Charactr']
+        required: [true,'Password Can Not Be Blank'],
+        validate:(value)=>{
+            // console.log(validator.isStrongPassword(value,{minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}))
+            if(!validator.isStrongPassword(value,{minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}))
+            {
+                throw new Error("Password Must Be More Then 8 Characters Long And At Least Contain One Upper Latter,One Number And One Special Characters(.,#,$,%)")
+            }
+        }
         
     },
     tokens: [{
@@ -31,13 +43,15 @@ const userSchema = new mongoose.Schema({
             type:String          
         }
     }]
-})
+},{timestamps:true})
 
 userSchema.methods.toJSON=function(){
     const user=this.toObject();
     delete user.password
     delete user.__v
     delete user.tokens
+    delete user.createdAt
+    delete user.updatedAt
     
     return user;
 }
@@ -47,6 +61,7 @@ userSchema.pre('save',async function(next){
     {
         this.password=await bcryptjs.hash(this.password,10);
     }
+    next()
 })
 
 

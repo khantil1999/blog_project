@@ -1,11 +1,15 @@
-const { checkValidation,generateObj} = require('./validation');
+
 const { Topic ,Post} = require('../models');
 const validator = require('validator');
+
+//this is use for creating the topic 
 const createTopic=async(req,res,next)=>{
     try {
         const topicObj={
-            topicTitle:req.body.title 
+            topicTitle:req.body.topicTitle,
+            userId:req.user._id
         }
+        
         const topic=await new Topic(topicObj).save();
         res.status(201).json({
             message:'Topic Created',
@@ -19,7 +23,7 @@ const createTopic=async(req,res,next)=>{
 }
 
 const findAll=async(req,res,next)=>{
-    const topic=await Topic.find();
+    const topic=await Topic.find({},{"__v":0});
     if(!topic)
     {
         return res.status(404).json({
