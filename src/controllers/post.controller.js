@@ -8,7 +8,7 @@ const { find } = require('../models/user.model');
 const createPost = async (req, res, next) => {
     try {
         
-        if (!validator.isMongoId(req.body.topicId)) {
+        if (!req.body.topicId || !validator.isMongoId(req.body.topicId)) {
             return res.status(404).json({
                 message: 'Please Provide Valid Topic Id'
             })
@@ -44,7 +44,7 @@ const updatePost = async (req, res, next) => {
         const keys = Object.keys(req.body);
         const updateAllowed = ['postTitle', 'postDescription', 'topicId']
 
-        const post = await Post.findOne({ _id: req.params.id, userId: req.user._id })
+        const post = await Post.findOne({ _id: req.params.id, userId: req.user._id },{createdAt:0,updatedAt:0,__v:0,userId:0})
         if (!post) {
             return res.status(404).json({
                 message: 'oops no posts found'
@@ -57,7 +57,7 @@ const updatePost = async (req, res, next) => {
         const newPost = await post.save();
         await newPost.populate({
             path: 'topicId',
-            select: '-_id -__v -createdAt -updatedAt'
+            select: '-_id -__v -createdAt -updatedAt -userId'
         }).execPopulate()
         res.status(200).json(newPost);
 
