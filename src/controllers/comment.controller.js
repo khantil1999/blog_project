@@ -6,15 +6,15 @@ const createComment=async(req,res,next)=>{
 
         if(!validator.isMongoId(req.params.id))
         {
-            return res.status(400).json({
-                error:'Provide Valid Post Id'
+            return res.status(404).json({
+                error:'oops no post found'
             })
         }
         const post=await Post.findById(req.params.id);
         if(!post)
         {
-            return res.status(400).json({
-                error: 'Provide Valid Post Id'
+            return res.status(404).json({
+                error: 'oops no post found'
             })
         }
         const commentObj={
@@ -66,15 +66,15 @@ const getCommentByPost=async(req,res,next)=>{
     try {
         if(!validator.isMongoId(req.params.id))
         {
-            return res.status(400).json({
-                error:'Provide Valid Post Id'
+            return res.status(404).json({
+                error:'oops no comments found on this post'
             })
         }
         const post=await Post.findById(req.params.id);
         if(!post)
         {
-            return res.status(400).json({
-                error: 'Provide Valid Post Id'
+            return res.status(404).json({
+                error:'oops no comments found on this post'
             })
         }
         const comments=await Comments.find({postId:req.params.id},{createdAt:0,updatedAt:0,__v:0});
@@ -88,7 +88,7 @@ const getCommentByPost=async(req,res,next)=>{
         {
             await comments[i].populate({
                 path:'postId',
-                select:'-_id -__v -userId -topicId -createdAt -updatedAt'
+                select:'-_id -__v -userId -topicId -createdAt -updatedAt -postImage'
             }).execPopulate();
         }
         res.status(200).json(comments);

@@ -1,6 +1,6 @@
 const errorHandler = ((err, req, res, next) => {
 
-    // console.log(err);
+    // console.log(err)
     if (err.code && err.code === 11000) {
         res.status(400).json({
             error: `${Object.keys(err.keyValue)} has already been taken`
@@ -23,8 +23,24 @@ const errorHandler = ((err, req, res, next) => {
             error: 'Unauthorized Access'
         })
     }
-    else {
-        res.send('ERROR')
+    else if(err.name==='Error'){
+        res.status(400).json({
+            error:err.message
+        })
+    }
+    else if(err.code==='LIMIT_FILE_SIZE'){
+        res.status(400).json({
+            error:'Image Size Can Not Be Grater Then 2MB'
+        })
+    }
+    else if(err.name==='MulterError') {
+        res.status(401).json({
+            error:err.message
+        })
+    }
+    else
+    {
+        res.send("ERROR")
     }
 
 

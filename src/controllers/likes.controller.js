@@ -6,15 +6,15 @@ const likePost = async (req, res, next) => {
     try {
 
         if (!validator.isMongoId(req.params.id)) {
-            return res.status(400).json({
-                error: 'Provide Valid Post Id'
+            return res.status(404).json({
+                error:'oops no comments found on this post'
             })
         }
         const post=await Post.findById(req.params.id);
         if(!post)
         {
-            return res.status(400).json({
-                error: 'Provide Valid Post Id'
+            return res.status(404).json({
+                error:'oops no comments found on this post'
             })
         }
         const data = await Like.findOne({ postId: req.params.id, userId: req.user._id })
@@ -56,15 +56,15 @@ const likePost = async (req, res, next) => {
 const disLikePost = async (req, res, next) => {
     try {
         if (!validator.isMongoId(req.params.id)) {
-            return res.status(400).json({
-                error: 'Provide Valid Post Id'
+            return res.status(404).json({
+                error:'oops no comments found on this post'
             })
         }
         const post=await Post.findById(req.params.id);
         if(!post)
         {
-            return res.status(400).json({
-                error: 'Provide Valid Post Id'
+            return res.status(404).json({
+                error:'oops no comments found on this post'
             })
         }
         const data = await Like.findOne({ postId: req.params.id, userId: req.user._id })

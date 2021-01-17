@@ -23,7 +23,7 @@ const createTopic=async(req,res,next)=>{
 }
 
 const findAll=async(req,res,next)=>{
-    const topic=await Topic.find({},{"__v":0});
+    const topic=await Topic.find({},{"__v":0,createdAt:0,updatedAt:0});
     if(!topic)
     {
         return res.status(404).json({
@@ -44,7 +44,7 @@ const getPost=async(req,res,next)=>{
         const posts = await Post.find({topicId:req.params.id})
         
        
-        if(!posts)
+        if(posts.length <=0)
         {
             return res.status(404).json({
                 message:'oops no post found releted to this topic!'
