@@ -229,6 +229,10 @@ const getPostImage=async(req,res,next)=>{
 //this is for the write the file 
 const fileWrite=(filePath,data)=>{
     try {
+        if(!fs.existsSync(path.join(__dirname,'../images/post/')))
+        {
+            fs.mkdirSync(path.join(__dirname,'../images/post/'),{ recursive: true })
+        }
         fs.writeFileSync(filePath,data)
         return "Done"
     } catch (error) {
