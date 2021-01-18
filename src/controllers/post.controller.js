@@ -1,11 +1,12 @@
 
 const { Post } = require('../models');
 const validator = require('validator');
-const { find } = require('../models/user.model');
+// const { find } = require('../models/user.model');
 const sharp = require('sharp');
 const path = require('path')
 const fs=require('fs');
 
+//this is for the create the post
 const createPost = async (req, res, next) => {
     try {
         let filePath=""
@@ -46,6 +47,7 @@ const createPost = async (req, res, next) => {
 
 }
 
+//this is for the update the post
 const updatePost = async (req, res, next) => {
     try {
         if (!validator.isMongoId(req.params.id)) {
@@ -91,6 +93,7 @@ const updatePost = async (req, res, next) => {
     }
 }
 
+//this is for the delete the post
 const deletePost = async (req, res, next) => {
     try {
         if (!validator.isMongoId(req.params.id)) {
@@ -118,6 +121,8 @@ const deletePost = async (req, res, next) => {
     }
 }
 
+
+//get all the post of the particular user
 const getPostByUser = async (req, res, next) => {
     try {
         const posts = await Post.find({ userId: req.user._id }, { createdAt: 0, updatedAt: 0, __v: 0, userId: 0,postImage:0})
@@ -139,6 +144,9 @@ const getPostByUser = async (req, res, next) => {
         next(error)
     }
 }
+
+
+//get all the post
 const getAllPost = async (req, res, next) => {
     try {
         const posts = await Post.find({}, { createdAt: 0, updatedAt: 0, __v: 0 ,postImage:0})
@@ -161,7 +169,7 @@ const getAllPost = async (req, res, next) => {
     }
 }
 
-
+// get most recent post
 const getMostRecentPost = async (req, res, next) => {
     try {
         const posts = await Post.find({}, { createdAt: 0, updatedAt: 0, __v: 0, userId: 0,postImage:0 }).sort({ postDate: -1 });
@@ -184,6 +192,7 @@ const getMostRecentPost = async (req, res, next) => {
 }
 
 
+//get image of the post
 
 const getPostImage=async(req,res,next)=>{
     try {
@@ -217,7 +226,7 @@ const getPostImage=async(req,res,next)=>{
 }
 
 
-
+//this is for the write the file 
 const fileWrite=(filePath,data)=>{
     try {
         fs.writeFileSync(filePath,data)

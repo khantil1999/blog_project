@@ -1,6 +1,7 @@
-const { checkValidation, generateObj } = require('./validation');
 const { Comments,Post } = require('../models');
 const validator = require('validator');
+
+//this is for the creating the comments
 const createComment=async(req,res,next)=>{
     try {
 
@@ -35,12 +36,14 @@ const createComment=async(req,res,next)=>{
     }
 }
 
+//this is for the deleteing the comments
+
 const deleteComment=async(req,res,next)=>{
     try {
         if(!validator.isMongoId(req.params.id))
         {
             return res.status(400).json({
-                error:'Provide Valid  Id'
+                error:'No Comment Found '
             })
         }
         const comment=await Comments.findOne({_id:req.params.id,userId:req.user._id});
@@ -61,7 +64,7 @@ const deleteComment=async(req,res,next)=>{
     }
 }
 
-
+//get all the comments on the post
 const getCommentByPost=async(req,res,next)=>{
     try {
         if(!validator.isMongoId(req.params.id))
@@ -97,6 +100,8 @@ const getCommentByPost=async(req,res,next)=>{
         next(error);
     }
 }
+
+
 module.exports={
     createComment,
     deleteComment,

@@ -1,7 +1,8 @@
-const { checkValidation, generateObj } = require('./validation');
 const { Like,Post} = require('../models');
 const validator = require('validator');
 
+
+//this for the like the post
 const likePost = async (req, res, next) => {
     try {
 
@@ -52,7 +53,7 @@ const likePost = async (req, res, next) => {
     }
 }
 
-
+//this is for dislike the post
 const disLikePost = async (req, res, next) => {
     try {
         if (!validator.isMongoId(req.params.id)) {
@@ -100,7 +101,7 @@ const disLikePost = async (req, res, next) => {
     }
 }
 
-
+//this is for the getMostLikePost
 
 const getMostLikePost = async (req, res, next) => {
     try {
@@ -141,7 +142,7 @@ const getMostLikePost = async (req, res, next) => {
 }
 
 
-
+// get all the likes and dislikes on the post
 const getAllLikeDisLikeByPost=async(req,res,next)=>{
     try {
         if (!validator.isMongoId(req.params.id)) {

@@ -7,10 +7,6 @@ const fileFilter = (req, file, callback) => {
         return callback(new Error('Only Images Are Allowed[png,jpeg,jpg]'), false)
     }
     
-    if(file.size > 2000000)
-    {
-        return callback(new Error(''), false)
-    }
     let index = file.mimetype.lastIndexOf('/');
     let fileType = file.mimetype.substring(index + 1);
     let fileName = "post_" + new Date().getTime() + "." + fileType;
@@ -19,7 +15,7 @@ const fileFilter = (req, file, callback) => {
 
 }
 
-const upload = multer({
+const uploadFile = multer({
     storage: multer.memoryStorage(),
     fileFilter: fileFilter,
     limits:{
@@ -29,14 +25,14 @@ const upload = multer({
 }).single('file')
 
 
-const uploadFile = (req, res, next) => {
-    upload(req, res, err => {
-        if (err) {
-            next(err);
-        }
-        next()
-    })
-}
+// const uploadFile = (req, res, next) => {
+//     upload(req, res, err => {
+//         if (err) {
+//             next(err);
+//         }
+//         next()
+//     })
+// }
 
 
 module.exports = {

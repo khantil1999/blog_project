@@ -1,7 +1,7 @@
 const { User } = require('../models');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+//this is for the create the user
 const createUser = async (req, res, next) => {
     try {
         const userObj = {
@@ -22,6 +22,7 @@ const createUser = async (req, res, next) => {
     }
 
 }
+//this is for the login
 const login = async (req, res, next) => {
     try {
 
@@ -54,7 +55,7 @@ const login = async (req, res, next) => {
     }
 }
 
-
+//this is for the logout
 const logOut=async(req,res,next)=>{
     try {
         req.user.tokens=req.user.tokens.filter((token)=>{
