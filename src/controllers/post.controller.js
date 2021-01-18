@@ -61,7 +61,7 @@ const updatePost = async (req, res, next) => {
         const post = await Post.findOne({ _id: req.params.id, userId: req.user._id }, { createdAt: 0, updatedAt: 0, __v: 0, userId: 0 })
         if (!post) {
             return res.status(404).json({
-                message: 'oops no posts found'
+                message: 'oops no post found'
             })
         }
         updateAllowed.forEach(el => {
