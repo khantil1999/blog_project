@@ -7,14 +7,14 @@ const likePost = async (req, res, next) => {
 
         if (!validator.isMongoId(req.params.id)) {
             return res.status(404).json({
-                error:'oops no comments found on this post'
+                error:'oops no post found'
             })
         }
         const post=await Post.findById(req.params.id);
         if(!post)
         {
             return res.status(404).json({
-                error:'oops no comments found on this post'
+                error:'oops no post found'
             })
         }
         const data = await Like.findOne({ postId: req.params.id, userId: req.user._id })
@@ -57,14 +57,14 @@ const disLikePost = async (req, res, next) => {
     try {
         if (!validator.isMongoId(req.params.id)) {
             return res.status(404).json({
-                error:'oops no comments found on this post'
+                error:'oops no post found'
             })
         }
         const post=await Post.findById(req.params.id);
         if(!post)
         {
             return res.status(404).json({
-                error:'oops no comments found on this post'
+                error:'oops no post found'
             })
         }
         const data = await Like.findOne({ postId: req.params.id, userId: req.user._id })
@@ -139,8 +139,38 @@ const getMostLikePost = async (req, res, next) => {
         next(error)
     }
 }
+
+
+
+const getAllLikeDisLikeByPost=async(req,res,next)=>{
+    try {
+        if (!validator.isMongoId(req.params.id)) {
+            return res.status(404).json({
+                error:'oops no post found'
+            })
+        }
+        const post=await Post.findById(req.params.id);
+        if(!post)
+        {
+            return res.status(404).json({
+                error:'oops no post found'
+            })
+        }       
+        const allData=await Like.find({postId:req.params.id},{postId:0,createdAt:0,updatedAt:0,__v:0,_id:0});
+        if(allData.length<=0)
+        {
+            return res.status(200).json({
+                error:'oops no likes or dislikes found on this post'
+            })
+        }
+         res.status(200).json(allData)
+    } catch (error) {
+        next(error)
+    }
+}
 module.exports = {
     likePost,
     disLikePost,
-    getMostLikePost
+    getMostLikePost,
+    getAllLikeDisLikeByPost
 }
