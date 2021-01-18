@@ -164,6 +164,13 @@ const getAllLikeDisLikeByPost=async(req,res,next)=>{
                 error:'oops no likes or dislikes found on this post'
             })
         }
+        for(let i=0;i<allData.length;i++)
+        {
+            await allData[i].populate({
+                path:'userId',
+                select:'-email -_id'
+            }).execPopulate()
+        }
          res.status(200).json(allData)
     } catch (error) {
         next(error)

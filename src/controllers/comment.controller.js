@@ -89,10 +89,16 @@ const getCommentByPost=async(req,res,next)=>{
         }
         for(let i=0;i<comments.length;i++)
         {
-            await comments[i].populate({
+            await comments[i].populate([
+                {
                 path:'postId',
                 select:'-_id -__v -userId -topicId -createdAt -updatedAt -postImage'
-            }).execPopulate();
+               },
+               {
+                path:'userId',
+                select:'-_id -__v  -email -createdAt -updatedAt '
+               }
+        ]).execPopulate();
         }
         res.status(200).json(comments);
 

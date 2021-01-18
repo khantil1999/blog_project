@@ -157,10 +157,16 @@ const getAllPost = async (req, res, next) => {
         }
         for (let i = 0; i < posts.length; i++) {
 
-            await posts[i].populate({
-                path: 'topicId',
-                select: '-_id -__v -createdAt -updatedAt -userId'
-            }).execPopulate();
+            await posts[i].populate([
+                {
+                    path: 'topicId',
+                    select: '-_id -__v -createdAt -updatedAt -userId'
+                },
+                {
+                    path:'userId',
+                    select: '-_id -__v -createdAt -updatedAt -email'
+                }
+            ]).execPopulate();
         }
 
         res.status(200).json(posts);
@@ -172,17 +178,23 @@ const getAllPost = async (req, res, next) => {
 // get most recent post
 const getMostRecentPost = async (req, res, next) => {
     try {
-        const posts = await Post.find({}, { createdAt: 0, updatedAt: 0, __v: 0, userId: 0,postImage:0 }).sort({ postDate: -1 });
+        const posts = await Post.find({}, { createdAt: 0, updatedAt: 0, __v: 0,postImage:0 }).sort({ postDate: -1 });
         if (!posts) {
             return res.status(404).json({
                 message: 'oops no posts found'
             })
         }
         for (let i = 0; i < posts.length; i++) {
-            await posts[i].populate({
+            await posts[i].populate([
+                {
                 path: 'topicId',
                 select: '-_id -__v -createdAt -updatedAt -userId'
-            }).execPopulate();
+                },
+                {
+                    path:'userId',
+                    select: '-_id -__v -createdAt -updatedAt -email'
+                }
+            ]).execPopulate();
         }
 
         res.status(200).json(posts);
